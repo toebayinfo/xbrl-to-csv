@@ -1,0 +1,28 @@
+!pip install beautifulsoup4
+!pip install lxml
+
+import csv
+from bs4 import BeautifulSoup
+
+# Load the XBRL file content
+with open("/content/path_to_content.xml", "r") as f:
+    content = f.read()
+
+# Create a BeautifulSoup object
+soup = BeautifulSoup(content, 'xml')
+
+# Create a set to hold unique tag names
+unique_tags = set([tag.name for tag in soup.find_all()])
+
+# Open CSV file for writing
+with open("/content/output.csv", "w", newline='') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=['Tag', 'Value'])
+
+    # Write header row
+    writer.writeheader()
+
+    # Iterate over all unique tags
+    for tag in unique_tags:
+        element = soup.find(tag)
+        if element:
+            writer.writerow({'Tag': tag, 'Value': element.text})
